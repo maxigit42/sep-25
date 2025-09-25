@@ -1,0 +1,275 @@
+minishell/
+├── Makefile
+├── src/
+│   ├── main.c
+│   ├── parser/
+│   │   ├── tokenizer.c
+│   │   ├── parser.c
+│   ├── executor/
+│   │   ├── exec.c
+│   │   ├── pipes.c
+│   │   ├── redir.c
+│   ├── builtins/
+│   │   ├── cd.c
+│   │   ├── echo.c
+│   │   ├── env.c
+│   ├── signals/
+│   │   ├── signals.c
+│   └── utils/
+│       ├── env_utils.c
+│       ├── string_utils.c
+└── include/
+    ├── minishell.h
+    ├── parser.h
+    ├── executor.h
+
+
+
+
+🧱 ETAPA 1: Fundamentos del proyecto
+✅ Objetivos principales
+Ejecutar comandos como una shell (ls, pwd, etc.)
+
+Soportar redirecciones (>, >>, <)
+
+Soportar pipes (|)
+
+Implementar algunos builtins (cd, echo, exit, env, export, unset, pwd)  //pendiente
+
+Manejar señales (Ctrl+C, Ctrl+D, etc.)
+
+Manejar comillas ('', "") //pendinete
+
+Manejar variables de entorno ($HOME, etc.) //pendiente
+
+Implementar expansión de variables ($VAR) // nose que es
+
+Manejar heredoc (<<) // tampoco
+
+🧠 ETAPA 2: Revisión de conocimientos necesarios
+🔧 Sistema y C
+fork(), execve(), wait(), pipe(), dup2(), open(), close(), access()
+
+signal(), kill(), readline, termios
+
+Manejo de memoria (malloc, free)
+
+Estructuras de datos (listas, tablas hash, árboles opcional)
+
+📚 Librerías útiles
+readline para input del usuario
+
+libft (si estás en 42, probablemente la necesitas)
+
+errno para manejo de errores
+
+🚧 ETAPA 3: Plan de desarrollo
+1. 🏗️ Infraestructura básica
+✅ Crear el bucle principal (loop del shell)
+
+✅ Leer input (readline)
+
+✅ Añadir historial
+
+✅ Manejar Ctrl+D (EOF), Ctrl+C (SIGINT)
+
+2. 📜 Parsing de comandos
+✅ Tokenizar comandos (espacios, comillas, |, >, >>, <, <<)
+
+✅ Manejar comillas ('', "")
+
+✅ Expandir variables ($VAR, $?)
+
+✅ Eliminar espacios innecesarios
+
+✅ Detectar errores de sintaxis
+
+3. 🔄 Ejecución
+✅ Ejecutar comandos externos con fork() y execve()
+
+✅ Buscar binarios en PATH
+
+✅ Diferenciar comandos built-in vs externos
+
+4. ⚙️ Built-ins
+Implementa como funciones internas:
+
+echo
+
+cd
+
+pwd
+
+export
+
+unset
+
+env
+
+exit
+
+5. 📡 Pipes y redirecciones
+✅ Manejar | (pipes)
+
+✅ Redirecciones de entrada y salida:
+
+> → sobrescribir
+
+>> → añadir al final
+
+< → input de archivo
+
+<< → heredoc
+
+6. 📶 Señales
+✅ Capturar SIGINT (Ctrl+C), SIGQUIT (Ctrl+)
+
+✅ Configurar señales en padre/hijo (ej. no duplicar prints)
+
+✅ Manejar Ctrl+D para salir limpiamente
+
+🧪 ETAPA 4: Testing
+🔍 Casos de prueba comunes
+Comillas mezcladas: echo "hola 'mundo'", echo 'hola $USER'
+
+Heredoc con señales (Ctrl+C)
+
+Variables no definidas
+
+Redirecciones encadenadas
+
+Comandos encadenados con múltiples pipes
+
+Comando con error de sintaxis (cat | | ls)
+
+
+__________________________________________________________________________________________________
+
+
+⚠️ Reglas clave para no perder puntos
+Variable global para señales:
+
+Solo puedes tener una variable global tipo volatile sig_atomic_t g_signal = 0;
+
+Úsala solo para decir “recibí SIGINT” o similar. Nada más.
+
+Todo lo demás, pásalo con pipes o mecanismos seguros.
+
+No quotes mal cerradas:
+
+Si el usuario pone: echo "Hola → debes detectar error y no ejecutar.
+
+Igual con 'Hola o echo $PATH |.
+
+No interpretar barra invertida \ o punto y coma ;
+
+No debes soportar: echo hola\ mundo ni echo hola ; ls → ignóralos o muestra error de sintaxis.
+
+No hagas built-ins avanzados
+
+Solo implementa lo mínimo obligatorio: no hagas cd -, export -p, etc.
+
+No uses funciones no autorizadas
+
+Solo las de la lista (más tu libft).
+
+Por ejemplo: no uses system(), strtok(), ni getline().
+
+Semana	Objetivo
+Día 1–5	Entrada + señales + Makefile ✔️
+Día 6–10	Parsing básico del input
+Día 11–15	Implementar execve y procesos hijos
+Día 16–20	Pipes
+Día 21–25	Redirecciones (>, >>, <, <<)
+Día 26–30	Variables de entorno y expansión ($, $?)
+Día 31–35	Built-ins (cd, pwd, export, etc.)
+Día 36–40	Heredoc y control de errores
+Día 41–45	Señales en hijos y edge cases
+Día 46–50	Testing, limpieza, norminette, leaks
+" 
+
+Minishell (proceso padre)
+    ├── Prompt: "minishell$ "
+    ├── Entrada: "ls"
+    ├── fork()
+    │      ├── Proceso hijo: ejecuta execve("/bin/ls")
+    │      └── Padre: espera al hijo con waitpid()
+    ├── Cuando el hijo termina → Prompt otra vez
+    └── Se repite...
+
+
+Minishell (proceso principal)
+│
+├── Bucle principal:
+│     ├── Mostrar el prompt (por ejemplo, "minishell$ ")
+│     ├── Leer entrada del usuario (readline)
+│     ├── Si la entrada es vacía o EOF (Ctrl+D) → salir
+│     ├── Tokenizar y parsear la entrada
+│     ├── Si es un comando interno:
+│     │      └── Ejecutar directamente (sin fork)
+│     └── Si es un comando externo:
+│            ├── fork()
+│            │     ├── [Proceso hijo]:
+│            │     │       └── execve() para ejecutar el comando
+│            │     └── [Proceso padre]:
+│            │             └── Esperar al hijo con waitpid()
+│            └── Liberar memoria y volver al prompt
+│
+└── (Repetir el bucle)
+
+🛠️ Esquema con funciones principales (modularizado)
+
+t_minishell_loop()
+│
+├── mostrar_prompt()
+├── input = leer_linea_usuario()
+├── if (input vacío o NULL) salir
+├── lista_tokens = parsear(input)
+├── if (comando interno):
+│      └── ejecutar_builtin(lista_tokens)
+└── else:
+       └── ejecutar_comando_externo(lista_tokens)
+
+ejecutar_comando_externo():
+    ├── fork()
+    │     ├── [hijo]:
+    │     │      └── execve()
+    │     └── [padre]:
+    │            └── waitpid()
+    └── liberar memoria
+
+🔍 ¿Dónde usar procesos hijos?
+
+    Comandos externos: Ejecutar siempre en un hijo (fork + execve).
+
+    Comandos internos (cd, exit, export, etc.): Ejecutar en el proceso padre (porque alteran el entorno del shell y no tienen binario).
+
+📊 Visual aún más resumido
+
+[MiniShell Proceso Principal]
+     │
+     └── Bucle:
+           ├── Mostrar prompt
+           ├── Leer comando
+           ├── Parsear tokens
+           ├── if Builtin:
+           │       └── Ejecutar
+           └── else:
+                   ├── fork()
+                   │     └── Hijo: execve()
+                   └── Padre: waitpid()
+           └── Repetir
+
+⚠️ Consejo importante
+
+Primero, asegúrate de tener claro el bucle principal y el mecanismo fork/execve. Después puedes agregar:
+
+    Pipes.
+
+    Redirecciones.
+
+    Variables de entorno.
+
+    Expansiones.
+
+    Control de señales.
