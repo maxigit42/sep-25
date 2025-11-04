@@ -187,6 +187,11 @@ void    ft_redirection(t_token *token)
             dup2(fd, STDOUT_FILENO);
             close(fd);
         }
+        else if(current->type == HEREDOC)
+        {
+            fd = ft_here_doc(current->next->str);
+            close(fd);
+        }
         current = current->next;
     }
 }
