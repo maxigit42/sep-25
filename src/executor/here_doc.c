@@ -1,5 +1,10 @@
 #include "minishell.h"
 
+
+//  revisar que al hacer un heredoc con un comando invalido redirigido a un outfile el 
+// mensaje del error se escribe en el archivo y no en la terminal 
+
+
 static void ft_heredoc_loop(char *limit, int fd)
 {
     char *line;

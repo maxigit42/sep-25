@@ -6,7 +6,7 @@
 /*   By: maximo <maximo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 20:51:03 by mwilline          #+#    #+#             */
-/*   Updated: 2025/10/28 14:06:30 by maximo           ###   ########.fr       */
+/*   Updated: 2025/11/04 02:09:14 by maximo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int builtin_echo(char **args)
 	
 	i = 1;
 	newline = 1;
-	if(args[1] && ft_strncmp(args[1], "-n", 2) == 0)
+	if(args[1] && ft_strcmp(args[1], "-n") == 0)
 	{
 		newline = 0;
 		i++;

@@ -190,6 +190,11 @@ void    ft_redirection(t_token *token)
         else if(current->type == HEREDOC)
         {
             fd = ft_here_doc(current->next->str);
+            if(fd > 0)
+            {
+                dup2(fd, STDIN_FILENO);
+                close(fd);
+            }
             close(fd);
         }
         current = current->next;

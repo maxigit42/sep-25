@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mwilline <mwilline@student.42.fr>          +#+  +:+       +#+        */
+/*   By: maximo <maximo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 23:47:45 by mwilline          #+#    #+#             */
-/*   Updated: 2025/07/28 23:55:33 by mwilline         ###   ########.fr       */
+/*   Updated: 2025/11/04 02:00:49 by maximo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,16 @@ int     **create_pipes(int  n_pipes)
 
 void setup_child_pipes(int **pipes, int n_pipes, int index)
 {
-    for (int i = 0; i < n_pipes; i++)
+    int i;
+    
+    i = 0;
+    while (i < n_pipes)
     {
-        if (i != index - 1)                 //quitar el for
+        if (i != index - 1)
             close(pipes[i][0]);
         if (i != index)
             close(pipes[i][1]);
+        i++;
     }
     // Si no es el primer comando, conecta su entrada al anterior
     if (index > 0)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mwilline <mwilline@student.42.fr>          +#+  +:+       +#+        */
+/*   By: maximo <maximo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 18:58:11 by mwilline          #+#    #+#             */
-/*   Updated: 2025/09/25 20:23:40 by mwilline         ###   ########.fr       */
+/*   Updated: 2025/11/04 01:58:28 by maximo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@ int builtin_exit(char **args)
     {
         if (!ft_isdigit_str(args[1]))
         {
-            fprintf(stderr, "minishell: exit: %s: numeric argument required\n", args[1]);
-            exit(2);
+            ft_putstr_fd("minishell: exit: ", 2);
+            ft_putstr_fd(args[1], 2);
+            ft_putstr_fd(": numeric argument required\n", 2);   
         }
         status = ft_atoi(args[1]);
         if (args[2]) // demasiados argumentos
