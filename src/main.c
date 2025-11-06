@@ -20,6 +20,7 @@ int main(int argc, char **argv, char **envp)
 	(void)argv;
 	data.token = NULL;
 	data.env = envp_to_list(envp);
+	data.exit_status = 0;
 
 	set_signal();
 	while(1)
@@ -49,7 +50,7 @@ void	mini_init(t_data *data, t_env *envp)
 	if(data->pipe == 0)
 	{
 		if(data->token->type == BUILTIN)
-			execute_builtin(data, &envp);
+			data->exit_status = execute_builtin(data, &envp);
 		else
 			execute_single_cmd(data, envp);
 	}

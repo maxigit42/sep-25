@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   built.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maximo <maximo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 19:04:58 by mwilline          #+#    #+#             */
-/*   Updated: 2025/11/04 01:57:30 by maximo           ###   ########.fr       */
+/*   Updated: 2025/11/04 19:55:14 by biniesta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int execute_builtin(t_data *data, t_env **env)
     if (ft_strcmp(args[0], "cd") == 0)
         return builtin_cd(data->token, *env);
     if (ft_strcmp(args[0], "echo") == 0)
-        return builtin_echo(args);
+        return builtin_echo(args, data);
     if (ft_strcmp(args[0], "pwd") == 0)
         return builtin_pwd();
     if (ft_strcmp(args[0], "export") == 0)

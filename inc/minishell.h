@@ -52,6 +52,7 @@ typedef struct t_data
 	pid_t	*pid;
 
 	int		pipe;
+	int		exit_status;//
 
 	char	***cmd;
 	char	**single_cmd;
@@ -118,7 +119,7 @@ void	unset_env_value(t_env **env, const char *key);
 //build
 int execute_builtin(t_data *data, t_env **env);
 int	builtin_cd(t_token *token, t_env *env);
-int builtin_echo(char **args);
+int builtin_echo(char **args, t_data *data);
 int builtin_env(t_env *env);
 int builtin_exit(char **args);
 int ft_isdigit_str(char *str);

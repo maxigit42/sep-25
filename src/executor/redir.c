@@ -27,6 +27,7 @@ void    ft_father(t_data *data, t_env *envp)
 void    execute_single_cmd(t_data *data, t_env *envp)
 {
     pid_t pid;
+    int status;
 
     pid = fork();
     if (pid < 0)
@@ -38,7 +39,8 @@ void    execute_single_cmd(t_data *data, t_env *envp)
         execute_cmd(envp, data->cmd[0]);
         exit(127);
     }
-    waitpid(pid, NULL, 0);
+    waitpid(pid, &status, 0);
+    data->exit_status = WEXITSTATUS(status);
     free_args(data);
 }
 
