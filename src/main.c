@@ -116,3 +116,6 @@ void ft_take_cmd(t_data *data)
 	data->cmd[i] = NULL;
 }
 
+
+
+
