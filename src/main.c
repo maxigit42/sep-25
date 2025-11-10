@@ -32,10 +32,13 @@ int main(int argc, char **argv, char **envp)
 			add_history(input);
 		data.token = NULL;
 		data.pipe = 0;
+		if(input[0])
+		{
 		split_arg(input, &data);
 		mini_init(&data, data.env);
 		if (data.token)
     		free_list(data.token);
+		}
 		free(input);
 	}
 	free_env_list(data.env);
