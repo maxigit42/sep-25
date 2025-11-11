@@ -53,7 +53,7 @@ void	mini_init(t_data *data, t_env *envp)
 	if(data->pipe == 0)
 	{
 		if(data->token->type == BUILTIN)
-			data->exit_status = execute_builtin(data, &envp);
+			data->exit_status = execute_builtin(data, &data->env);
 		else
 			execute_single_cmd(data, envp);
 	}
@@ -68,11 +68,13 @@ void	mini_init(t_data *data, t_env *envp)
         data->cmd = NULL;
     }
     if (data->token)
+	{
         free_list(data->token);
-    data->token = NULL;
+    	data->token = NULL;
+	}
 }
 
-void ft_take_cmd(t_data *data)
+void	ft_take_cmd(t_data *data)
 {
 	t_token	*current;
 	int		i;
@@ -80,25 +82,33 @@ void ft_take_cmd(t_data *data)
 	char	**subcmd;
 	int		arg_count;
 
-	i = 0;
+	if (!data || !data->token)
+		return;
+
 	data->cmd = malloc(sizeof(char **) * (data->pipe + 2));
-	if(!data->cmd)
-		return ;
+	if (!data->cmd)
+		return;
+	i = 0;
 	current = data->token;
-	while(current)
+
+	while (current)
 	{
 		j = 0;
 		arg_count = count_pipe_args(current);
+		if (arg_count <= 0)
+			arg_count = 1;
 		subcmd = malloc(sizeof(char *) * (arg_count + 1));
-		if(!subcmd)
-			return;
-		while(current && current->type != PIPE)
+		if (!subcmd)
+			return (free_cmd_array(data->cmd), (void)(data->cmd = NULL));
+
+		while (current && current->type != PIPE)
 		{
-			if(current->type == OUTFILE || current->type == INFILE
+			// Saltar redirecciones
+			if (current->type == OUTFILE || current->type == INFILE
 				|| current->type == APPEND || current->type == HEREDOC)
 			{
 				current = current->next;
-				if(current)
+				if (current)
 					current = current->next;
 				continue;
 			}
@@ -107,8 +117,9 @@ void ft_take_cmd(t_data *data)
 		}
 		subcmd[j] = NULL;
 		data->cmd[i++] = subcmd;
+
 		if (current && current->type == PIPE)
-            current = current->next;
+			current = current->next;
 	}
 	data->cmd[i] = NULL;
 }

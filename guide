@@ -273,3 +273,17 @@ Primero, asegúrate de tener claro el bucle principal y el mecanismo fork/execve
     Expansiones.
 
     Control de señales.
+
+
+
+
+
+
+
+    | Etapa             | Función usada                                           | Qué hace                                                 |
+| ----------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| Validación        | `check_quotes()`                                        | Verifica si hay comillas sin cerrar                      |
+| Tokenización      | `split_with_quotes()`                                   | Divide el input respetando comillas y elimina las mismas |
+| Expansión         | `process_tokens()`                                      | Recorre cada token y llama a `expand_variables()`        |
+| Expansión interna | `expand_variables()`                                    | Sustituye `$VAR`, `$?`, etc.                             |
+| Construcción      | `ft_token_new()` / `put_lstback()` / `get_token_type()` | Crea la lista `t_token` lista para `ft_take_cmd()`       |

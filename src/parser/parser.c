@@ -18,7 +18,10 @@ t_token     *ft_token_new(char *str)
     
     new = malloc(sizeof(t_token));
     if(!new)
+    {
+        free(new);
         ft_error(MALLOC_ERR, 0);
+    }
     new->str = ft_strdup(str);
     new->type = 0;
     new->infile = 0;
@@ -80,37 +83,64 @@ void    put_lstback(t_token **head, t_token *new)
     temp->next = new;
 }
 
-void    split_arg(char *args, t_data *data)
+void split_arg(char *args, t_data *data)
 {
     char **token_array;
+    char **expanded_array;
     int i;
     t_token *new;
 
-    i = 0;
-    token_array = ft_split(args, ' ');
-    if (!token_array)
-        return ;
-    while(token_array[i])
+    if (!args || !*args)
+        return;
+
+    // 1️⃣ Validar que las comillas estén balanceadas
+    if (!check_quotes(args))
     {
-        new = ft_token_new(token_array[i]);
+        data->exit_status = 2;
+        return;
+    }
+
+    // 2️⃣ Tokenizar respetando las comillas
+    token_array = split_with_quotes(args);
+    if (!token_array)
+        return;
+
+    // 3️⃣ Expandir variables de entorno ($VAR, $?, etc)
+    expanded_array = process_tokens(token_array, data);
+    if (!expanded_array)
+        return;
+
+    // 4️⃣ Crear lista enlazada de tokens y asignar tipos
+    i = 0;
+    while (expanded_array[i])
+    {
+        new = ft_token_new(expanded_array[i]);
+        if (!new)
+        {
+            free_split(expanded_array);
+            free_list(data->token);
+            data->token = NULL;
+            return;
+        }
         put_lstback(&(data->token), new);
-        get_token_type(token_array[i], new, data);
+        get_token_type(expanded_array[i], new, data);
         i++;
     }
-    free_split(token_array);
+
+    // 5️⃣ Liberar arrays temporales
+    free_split(expanded_array);
 }
 
 int is_builtin(const char *str)
 {
-    if(!str)
-        return(0);
-    return(
-        ft_strncmp(str, "echo", 4) == 0 ||
-        ft_strncmp(str, "cd", 2) == 0 ||
-        ft_strncmp(str, "pwd", 3) == 0 ||
-        ft_strncmp(str, "export", 6) == 0 ||
-        ft_strncmp(str, "unset", 5) == 0 ||
-        ft_strncmp(str, "env", 3) == 0 ||
-        ft_strncmp(str, "exit", 4) == 0
+    if (!str) return 0;
+    return (
+        ft_strcmp(str, "echo") == 0 ||
+        ft_strcmp(str, "cd") == 0 ||
+        ft_strcmp(str, "pwd") == 0 ||
+        ft_strcmp(str, "export") == 0 ||
+        ft_strcmp(str, "unset") == 0 ||
+        ft_strcmp(str, "env") == 0 ||
+        ft_strcmp(str, "exit") == 0
     );
 }

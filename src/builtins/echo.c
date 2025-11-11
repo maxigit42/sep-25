@@ -3,46 +3,51 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
+/*   By: maximo <maximo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 20:51:03 by mwilline          #+#    #+#             */
-/*   Updated: 2025/11/05 20:12:55 by biniesta         ###   ########.fr       */
+/*   Updated: 2025/11/11 04:31:29 by maximo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <stdio.h>
 
-static void	print_str(t_data *data, char *str, int fd)
+static void	print_str(t_data *data, const char *str, int fd)
 {
-	int	i;
-	char *new_key;
-	char *text;
+	int		i;
+	char	*var_name;
+	char	*value;
 
 	i = 0;
-	while(str[i])
+	while (str[i])
 	{
 		if (str[i] == '$')
 		{
+			// Casos especiales de expansión
 			if (str[i + 1] == '?')
 			{
-				ft_putnbr_fd(data->exit_status, 1);
-				i++;
+				ft_putnbr_fd(data->exit_status, fd);
+				i += 2;
+				continue;
 			}
+			// Variables normales: $VAR
+			else if (ft_isalpha(str[i + 1]) || str[i + 1] == '_')
+			{
+				int len = 0;
+				while (str[i + 1 + len] && (ft_isalnum(str[i + 1 + len]) || str[i + 1 + len] == '_'))
+					len++;
+				var_name = ft_substr(&str[i + 1], 0, len);
+				value = get_env_value_list(data->env, var_name);
+				if (value)
+					ft_putstr_fd(value, fd);
+				free(var_name);
+				i += len + 1;
+				continue;
+			}
+			// $ sin variable → se imprime tal cual
 			else
-			{	
-				new_key = ft_strdup(&str[i + 1]);
-				text = ft_strdup(get_env_value_list(data->env, new_key));
-				if (!text)
-				{
-					free(new_key);
-					return ;
-				}
-				ft_putstr_fd(text, fd);
-				free(text);
-				free(new_key);
-				return ;
-			}
+				ft_putchar_fd('$', fd);
 		}
 		else
 			ft_putchar_fd(str[i], fd);
@@ -50,26 +55,43 @@ static void	print_str(t_data *data, char *str, int fd)
 	}
 }
 
-int builtin_echo(char **args, t_data *data)
+/*
+** builtin_echo — implementación segura y correcta
+**
+** - Soporta varios -n seguidos
+** - Expande $VAR y $?
+** - Maneja espacios correctamente
+*/
+int	builtin_echo(char **args, t_data *data)
 {
-	int i;
-	int newline;
-	
+	int	i;
+	int	newline;
+
 	i = 1;
 	newline = 1;
-	if(args[1] && ft_strcmp(args[1], "-n") == 0)
+
+	// Detectar múltiples flags -n consecutivos
+	while (args[i] && args[i][0] == '-' && args[i][1] == 'n')
 	{
+		int j = 1;
+		while (args[i][j] == 'n')
+			j++;
+		if (args[i][j] != '\0')
+			break; // no es solo "-n" o "-nnn"
 		newline = 0;
 		i++;
 	}
-	while(args[i])
+
+	while (args[i])
 	{
-		print_str(data, args[i], 1);
-		if(args[i + 1])
-			ft_putstr_fd(" ", 1);  // creo que no estoy pasando un caracter de espacio y estoy pasando una cadena
+		print_str(data, args[i], STDOUT_FILENO);
+		if (args[i + 1])
+			ft_putchar_fd(' ', STDOUT_FILENO);
 		i++;
 	}
-	if(newline)
-		ft_putstr_fd("\n", 1);
-	return(0);
+
+	if (newline)
+		ft_putchar_fd('\n', STDOUT_FILENO);
+	data->exit_status = 0;
+	return (0);
 }
