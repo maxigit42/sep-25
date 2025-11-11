@@ -40,6 +40,8 @@ typedef struct s_token
 	int				outfile;
 	int				heredoc;
 	int				append;
+	int in_single_quotes;
+    int in_double_quotes; 
 	
 	struct t_data	*data;
 	struct s_token	*next;

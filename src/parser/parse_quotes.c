@@ -80,24 +80,26 @@ static int	token_len(char *str)
 	return (i);
 }
 
-static char	*extract_token(char *str, int len)
+static char	*extract_token(char *str, int len, int *single_flag, int *double_flag)
 {
 	char	*token;
-	int		i;
-	int		j;
-	char	quote;
+	int		i = 0, j = 0;
+	char	quote = 0;
 
 	token = malloc(len + 1);
 	if (!token)
 		return (NULL);
-	i = 0;
-	j = 0;
-	quote = 0;
+
+	*single_flag = 0;
+	*double_flag = 0;
+
 	while (i < len)
 	{
 		if ((str[i] == '\'' || str[i] == '"') && !quote)
 		{
 			quote = str[i];
+			if (quote == '\'') *single_flag = 1;
+			if (quote == '"') *double_flag = 1;
 			i++;
 			continue;
 		}
@@ -136,7 +138,7 @@ char	**split_with_quotes(char *str)
 		if (str[i])
 		{
 			len = token_len(&str[i]);
-			tokens[j] = extract_token(&str[i], len);
+			tokens[j] = extract_token(&str[i], len, &single_flag, &double_flag);
 			if (!tokens[j])
 			{
 				while (--j >= 0)

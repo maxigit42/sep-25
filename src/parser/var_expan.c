@@ -27,18 +27,18 @@ static char	*get_var_name(char *str, int len)
 	return (name);
 }
 
-static int	handle_special_dollar(char *str, char *result, int j)
-{
-	if (str[1] == '\0' || str[1] == ' ' || str[1] == '\t')
-	{
-		result[j++] = '$';
-		return (j);
-	}
-	if (ft_isdigit(str[1]) || str[1] == '@' || str[1] == '*' || str[1] == '#')
-		return (j);
-	result[j++] = '$';
-	return (j);
-}
+// static int	handle_special_dollar(char *str, char *result, int j)
+// {
+// 	if (str[1] == '\0' || str[1] == ' ' || str[1] == '\t')
+// 	{
+// 		result[j++] = '$';
+// 		return (j);
+// 	}
+// 	if (ft_isdigit(str[1]) || str[1] == '@' || str[1] == '*' || str[1] == '#')
+// 		return (j);
+// 	result[j++] = '$';
+// 	return (j);
+// }
 
 static int calculate_expanded_len(char *str, t_env *env, int exit_status)
 {
@@ -111,33 +111,33 @@ static int calculate_expanded_len(char *str, t_env *env, int exit_status)
     return len;
 }
 
-static int	expand_var(char *str, char *result, int j, t_data *data)
-{
-	int		var_len;
-	char	*name;
-	char	*value;
+// static int	expand_var(char *str, char *result, int j, t_data *data)
+// {
+// 	int		var_len;
+// 	char	*name;
+// 	char	*value;
 
-	var_len = get_var_name_len(&str[1]);
-	if (var_len == 0)
-		return (handle_special_dollar(str, result, j));
-	if (str[1] == '?')
-	{
-		char *exit_str = ft_itoa(data->exit_status);
-		ft_strlcpy(&result[j], exit_str, ft_strlen(exit_str) + 1);
-		j += ft_strlen(exit_str);
-		free(exit_str);
-		return (j);
-	}
-	name = get_var_name(&str[1], var_len);
-	value = get_env_value_list(data->env, name);
-	if (value)
-	{
-		ft_strlcpy(&result[j], value, ft_strlen(value) + 1);
-		j += ft_strlen(value);
-	}
-	free(name);
-	return (j);
-}
+// 	var_len = get_var_name_len(&str[1]);
+// 	if (var_len == 0)
+// 		return (handle_special_dollar(str, result, j));
+// 	if (str[1] == '?')
+// 	{
+// 		char *exit_str = ft_itoa(data->exit_status);
+// 		ft_strlcpy(&result[j], exit_str, ft_strlen(exit_str) + 1);
+// 		j += ft_strlen(exit_str);
+// 		free(exit_str);
+// 		return (j);
+// 	}
+// 	name = get_var_name(&str[1], var_len);
+// 	value = get_env_value_list(data->env, name);
+// 	if (value)
+// 	{
+// 		ft_strlcpy(&result[j], value, ft_strlen(value) + 1);
+// 		j += ft_strlen(value);
+// 	}
+// 	free(name);
+// 	return (j);
+// }
 
 char *expand_variables(char *str, t_data *data)
 {
@@ -149,6 +149,8 @@ char *expand_variables(char *str, t_data *data)
 
     if (!str)
         return NULL;
+    if (str[0] == '\'' && str[ft_strlen(str) - 1] == '\'')
+        return ft_strdup(str);
 
     len = calculate_expanded_len(str, data->env, data->exit_status);
     result = malloc(len + 1);
@@ -221,35 +223,37 @@ char *expand_variables(char *str, t_data *data)
     return result;
 }
 
-char	**process_tokens(char **tokens, t_data *data)
+char **process_tokens(char **tokens, t_data *data)
 {
-	char	**processed;
-	int		i;
+    char **processed;
+    int i;
 
-	i = 0;
-	while (tokens[i])
-		i++;
-	processed = malloc(sizeof(char *) * (i + 1));
-	if (!processed)
-	{
-		free_split(tokens);
-		return (NULL);
-	}
-	i = 0;
-	while (tokens[i])
-	{
-		processed[i] = expand_variables(tokens[i], data);
-		if (!processed[i])
-		{
-			while (--i >= 0)
-				free(processed[i]);
-			free(processed);
-			free_split(tokens);
-			return (NULL);
-		}
-		i++;
-	}
-	processed[i] = NULL;
-	free_split(tokens);
-	return (processed);
+    if (!tokens)
+        return (NULL);
+    for (i = 0; tokens[i]; i++);
+    processed = malloc(sizeof(char *) * (i + 1));
+    if (!processed)
+        return (NULL);
+
+    i = 0;
+    while (tokens[i])
+    {
+        char *t = tokens[i];
+        if (t[0] == '\'' && t[ft_strlen(t) - 1] == '\'')
+            processed[i] = ft_strdup(t); // no expandir
+        else
+            processed[i] = expand_variables(t, data);
+
+        if (!processed[i])
+        {
+            while (--i >= 0)
+                free(processed[i]);
+            free(processed);
+            return (NULL);
+        }
+        i++;
+    }
+    processed[i] = NULL;
+    return (processed);
 }
+
