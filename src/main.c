@@ -12,6 +12,49 @@
 
 #include "minishell.h"
 
+//MOVER ESTAS FUNCIONES AL QUOTES
+int quotes_closed(char *s)
+{
+	static int	q_s;
+	static int q_d;
+
+	q_s = 0;
+	q_d = 0;
+	while (*s)
+	{
+		if (*s == '\'' && !q_d)
+			q_s = !q_s;
+		if (*s == '\"' && !q_s)
+			q_d = !q_d;
+		s++;
+	}
+	if (q_s || q_d)
+		return (0);
+	else
+		return (1);
+}
+
+char	*expand_input(char *input)
+{
+	char	*new_line;
+	char 	*temp;
+	char	*joined;
+
+	while (!quotes_closed(input))
+	{
+		new_line = readline("> ");
+		temp = ft_strjoin(input, "\n");
+		joined = ft_strjoin(temp, new_line);
+		free(temp);
+		free(input);
+		free(new_line);
+		input = ft_strdup(joined);
+		free(joined);
+	}
+	return (input);
+}
+//MOVER ESTAS FUNCIONES AL QUOTES
+
 int main(int argc, char **argv, char **envp)
 {
 	char	*input;
@@ -27,9 +70,10 @@ int main(int argc, char **argv, char **envp)
 	{
 		input = readline("minishell$ ");
 		if(!input)
-			break;
-		if(*input)
-			add_history(input);
+			break;	
+		if (!quotes_closed(input))
+			input = expand_input(input);
+		add_history(input);
 		data.token = NULL;
 		data.pipe = 0;
 		if(input[0])

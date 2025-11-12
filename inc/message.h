@@ -16,5 +16,7 @@
 #define SINGLE_QUOTE 8
 #define DOUBLE_QUOTE 9
 #define BUILTIN 10
+#define SINGLE_QUOTES 11
+#define DOUBLE_QUOTES 12
 
 #endif
