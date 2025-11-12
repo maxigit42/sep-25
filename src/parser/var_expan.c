@@ -194,29 +194,49 @@ char *expand_variables(char *str, t_data *data)
 }
 
 
-char **process_tokens(char **tokens, t_data *data)
+char **process_tokens(t_parse_token *tokens, t_data *data)
 {
-	int		i;
-	char	**processed;
+    int count = 0;
+    int i = 0;
 
-	if (!tokens)
-		return (NULL);
-	for (i = 0; tokens[i]; i++);
-	processed = malloc(sizeof(char *) * (i + 1));
-	if (!processed)
-		return (NULL);
+    while (tokens[count].str)
+        count++;
 
-	for (i = 0; tokens[i]; i++)
-	{
-		processed[i] = expand_variables(tokens[i], data);
-		if (!processed[i])
-		{
-			while (--i >= 0)
-				free(processed[i]);
-			free(processed);
-			return (NULL);
-		}
-	}
-	processed[i] = NULL;
-	return (processed);
+    char **processed = malloc(sizeof(char *) * (count + 1));
+    if (!processed)
+        return NULL;
+
+        
+    for (i = 0; i < count; i++)
+    {
+        if (tokens[i].in_single_quote == 1)
+        {
+            // No expandir variables
+            processed[i] = ft_strdup(tokens[i].str);
+        }
+        else
+        {
+            // Expandir normalmente
+            processed[i] = expand_variables(tokens[i].str, data);
+        }
+        
+        if (!processed[i])
+        {
+            while (--i >= 0)
+            free(processed[i]);
+            free(processed);
+            return NULL;
+        }
+    }
+    
+    // for(int x = 0; x < count; x++)
+    // {
+    //     printf("string: %s\n", tokens[x].str);
+    //     printf("simple: %d\n", tokens[x].in_single_quote);
+    //     printf("double: %d\n\n", tokens[x].in_double_quote);
+    //     printf("----------------------------------------------\n");
+    // }
+    processed[i] = NULL;
+    return processed;
 }
+

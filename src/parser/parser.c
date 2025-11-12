@@ -85,10 +85,10 @@ void    put_lstback(t_token **head, t_token *new)
 
 void split_arg(char *args, t_data *data)
 {
-    char **token_array;
     char **expanded_array;
     int i;
     t_token *new;
+    t_parse_token *tokens_quote;
 
     if (!args || !*args)
         return;
@@ -101,26 +101,26 @@ void split_arg(char *args, t_data *data)
     }
 
     // 2️⃣ Tokenizar respetando las comillas
-    token_array = split_with_quotes(args);
-    if (!token_array)
+    tokens_quote = split_with_quotes(args);
+    if (!tokens_quote)
         return;
 
     // 3️⃣ Expandir variables de entorno ($VAR, $?, etc)
-    expanded_array = process_tokens(token_array, data);
+    expanded_array = process_tokens(tokens_quote, data);
     if (!expanded_array)
         return;
 
+    // for(int x = 0; expanded_array[x]; x++)
+    //     printf("Varaible expandidas: %s\n", expanded_array[x]);
     // 4️⃣ Crear lista enlazada de tokens y asignar tipos
     i = 0;
-    for(int x = 0; expanded_array[x]; x++)
-        printf("%s\n split:", expanded_array[x]);
-
     while (expanded_array[i])
     {
         new = ft_token_new(expanded_array[i]);
         if (!new)
         {
             free_split(expanded_array);
+            free(tokens_quote);
             free_list(data->token);
             data->token = NULL;
             return;
@@ -130,9 +130,22 @@ void split_arg(char *args, t_data *data)
         i++;
     }
 
-    free_split(token_array);
+    free_token(tokens_quote);
     // 5️⃣ Liberar arrays temporales
     free_split(expanded_array);
+}
+
+void free_token(t_parse_token *token)
+{
+    int i;
+
+    i = 0;
+    while(token[i].str)
+    {
+        free(token[i].str);
+        i++;
+    }
+    free(token);
 }
 
 int is_builtin(const char *str)

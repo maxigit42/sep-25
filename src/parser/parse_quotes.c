@@ -99,38 +99,44 @@ static char	*extract_token(char *str, int len)
 	return (token);
 }
 
-char	**split_with_quotes(char *str)
+t_parse_token *split_with_quotes(char *str)
 {
-	char	**tokens;
-	int		count, i = 0, j = 0, len;
+    t_parse_token *tokens;
+    int count = count_tokens(str);
+    int i = 0, j = 0;
 
-	if (!check_quotes(str))
-		return (NULL);
-	count = count_tokens(str);
-	tokens = malloc(sizeof(char *) * (count + 1));
-	if (!tokens)
-		return (NULL);
+    if (!check_quotes(str))
+        return NULL;
 
-	while (str[i])
-	{
-		while (str[i] == ' ' || str[i] == '\t')
-			i++;
-		if (str[i])
-		{
-			len = token_len(&str[i]);
-			tokens[j] = extract_token(&str[i], len);
-			if (!tokens[j])
-			{
-				while (--j >= 0)
-					free(tokens[j]);
-				free(tokens);
-				return (NULL);
-			}
-			j++;
-			i += len;
-		}
-	}
-	tokens[j] = NULL;
-	return (tokens);
+    tokens = malloc(sizeof(t_parse_token) * (count + 1));
+    if (!tokens)
+        return NULL;
+
+    while (str[i])
+    {
+        while (str[i] == ' ' || str[i] == '\t')
+            i++;
+
+        if (!str[i])
+            break;
+
+        int len = token_len(&str[i]);
+        tokens[j].in_single_quote = 0;
+        tokens[j].in_double_quote = 0;
+
+        // Determinar si el token está entre comillas
+        if (str[i] == '\'')
+            tokens[j].in_single_quote = 1;
+        else if (str[i] == '"')
+            tokens[j].in_double_quote = 1;
+
+        tokens[j].str = extract_token(&str[i], len);
+        i += len;
+        j++;
+    }
+
+    tokens[j].str = NULL;
+    return tokens;
 }
+
 

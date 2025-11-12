@@ -31,6 +31,13 @@ typedef struct s_env{
 	struct s_env *next;
 } t_env;
 
+typedef struct s_parse_token
+{
+	char *str;
+	int in_single_quote;
+	int in_double_quote;
+} t_parse_token;
+
 typedef struct s_token
 {
 	int				type;
@@ -39,9 +46,7 @@ typedef struct s_token
 	int				infile;
 	int				outfile;
 	int				heredoc;
-	int				append;
-	int in_single_quotes;
-    int in_double_quotes; 
+	int				append; 
 	
 	struct t_data	*data;
 	struct s_token	*next;
@@ -90,9 +95,9 @@ int		is_builtin(const char *str);
 
 // quote_handle
 int		check_quotes(char *str);
-char	**split_with_quotes(char *str);
+t_parse_token *split_with_quotes(char *str);
 char	*expand_variables(char *str, t_data *data);
-char	**process_tokens(char **tokens, t_data *data);
+char **process_tokens(t_parse_token *tokens, t_data *data);
 
 // utils
 void	ft_error(char *str, int quit);
@@ -107,6 +112,7 @@ void	ft_free_list(t_token **token);
 void	free_env_list(t_env *env);
 void	free_cmd_array(char ***cmd_array);
 int		ft_strcmp(const char *s, const char *ss);
+void free_token(t_parse_token *token);
 
 // signs
 void	set_signal(void);
