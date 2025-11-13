@@ -68,130 +68,144 @@ static char	*get_var_name(char *str, int len)
 	return (name);
 }
 
-static int calculate_expanded_len(char *str, t_env *env, int exit_status)
-{
-    int len = 0;
-    int i = 0;
-    char quote = 0;
+// static int calculate_expanded_len(char *str, t_env *env, int exit_status)
+// {
+//     int len = 0;
+//     int i = 0;
+//     char quote = 0;
 
-    if (!str)
-        return 0;
+//     if (!str)
+//         return 0;
 
-    while (str[i])
-    {
-        /* gestionar comillas */
-        if ((str[i] == '\'' || str[i] == '"') && !quote)
-        {
-            quote = str[i++];
-            continue;
-        }
-        if (str[i] == quote)
-        {
-            quote = 0;
-            i++;
-            continue;
-        }
+//     while (str[i])
+//     {
+//         /* gestionar comillas */
+//         if ((str[i] == '\'' || str[i] == '"') && !quote)
+//         {
+//             quote = str[i++];
+//             continue;
+//         }
+//         if (str[i] == quote)
+//         {
+//             quote = 0;
+//             i++;
+//             continue;
+//         }
 
-        /* expansion: solo si siguiente caracter existe y no estamos en comilla simple */
-        if (str[i] == '$' && str[i + 1] && quote != '\'')
-        {
-            int var_len = get_var_name_len(&str[i + 1]);
+//         /* expansion: solo si siguiente caracter existe y no estamos en comilla simple */
+//         if (str[i] == '$' && str[i + 1] && quote != '\'')
+//         {
+//             int var_len = get_var_name_len(&str[i + 1]);
 
-            if (var_len == 0)
-            {
-                /* caso: no hay nombre de variable -> se interpretará como '$' literal */
-                len++;
-                i++;              /* avanzamos 1 (el '$') */
-                continue;
-            }
+//             if (var_len == 0)
+//             {
+//                 /* caso: no hay nombre de variable -> se interpretará como '$' literal */
+//                 len++;
+//                 i++;              /* avanzamos 1 (el '$') */
+//                 continue;
+//             }
 
-            if (str[i + 1] == '?')
-            {
-                char *exit_str = ft_itoa(exit_status);
-                if (exit_str)
-                {
-                    len += ft_strlen(exit_str);
-                    free(exit_str);
-                }
-                i += 2;           /* saltamos '$' y '?' */
-                continue;
-            }
+//             if (str[i + 1] == '?')
+//             {
+//                 char *exit_str = ft_itoa(exit_status);
+//                 if (exit_str)
+//                 {
+//                     len += ft_strlen(exit_str);
+//                     free(exit_str);
+//                 }
+//                 i += 2;           /* saltamos '$' y '?' */
+//                 continue;
+//             }
 
-            /* nombre normal: obtener longitud del valor si existe */
-            {
-                char *name = get_var_name(&str[i + 1], var_len);
-                if (name)
-                {
-                    char *val = get_env_value_list(env, name);
-                    if (val)
-                        len += ft_strlen(val);
-                    free(name);
-                }
-            }
-            i += var_len + 1; /* saltamos '$' + nombre */
-            continue;
-        }
+//             /* nombre normal: obtener longitud del valor si existe */
+//             {
+//                 char *name = get_var_name(&str[i + 1], var_len);
+//                 if (name)
+//                 {
+//                     char *val = get_env_value_list(env, name);
+//                     if (val)
+//                         len += ft_strlen(val);
+//                     free(name);
+//                 }
+//             }
+//             i += var_len + 1; /* saltamos '$' + nombre */
+//             continue;
+//         }
 
-        /* caso normal: un carácter */
-        len++;
-        i++;
-    }
-    return len;
-}
+//         /* caso normal: un carácter */
+//         len++;
+//         i++;
+//     }
+//     return len;
+// }
 
 char *expand_variables(char *str, t_data *data)
 {
-	int		i = 0, j = 0;
-	int		len;
-	char	*result;
+    int     i = 0;
+    char    *result;
+    char    *tmp;
 
-	if (!str)
-		return (NULL);
+    if (!str)
+        return (NULL);
+    result = ft_strdup("");
+    if (!result)
+        return (NULL);
 
-	/* calcular longitud final expandida */
-	len = calculate_expanded_len(str, data->env, data->exit_status);
-	result = malloc(len + 1);
-	if (!result)
-		return (NULL);
+    while (str[i])
+    {
+        if (str[i] == '$' && str[i + 1])
+        {
+            // Caso especial: $?
+            if (str[i + 1] == '?')
+            {
+                char *exit_str = ft_itoa(data->exit_status);
+                tmp = ft_strjoin(result, exit_str);
+                free(result);
+                free(exit_str);
+                result = tmp;
+                i += 2;
+                continue;
+            }
 
-	while (str[i])
-	{
-		if (str[i] == '$' && str[i + 1])
-		{
-			int var_len = get_var_name_len(&str[i + 1]);
-			if (var_len == 0)
-			{
-				result[j++] = str[i++];
-				continue;
-			}
-			if (str[i + 1] == '?')
-			{
-				char *exit_str = ft_itoa(data->exit_status);
-				ft_strlcpy(&result[j], exit_str, ft_strlen(exit_str) + 1);
-				j += ft_strlen(exit_str);
-				free(exit_str);
-				i += 2;
-				continue;
-			}
-			char *name = get_var_name(&str[i + 1], var_len);
-			if (name)
-			{
-				char *val = get_env_value_list(data->env, name);
-				if (val)
-				{
-					ft_strlcpy(&result[j], val, ft_strlen(val) + 1);
-					j += ft_strlen(val);
-				}
-				free(name);
-			}
-			i += var_len + 1;
-			continue;
-		}
-		result[j++] = str[i++];
-	}
-	result[j] = '\0';
-	return (result);
+            // Nombre de variable normal
+            int var_len = get_var_name_len(&str[i + 1]);
+            if (var_len == 0)
+            {
+                // Ej: $ seguido de espacio o símbolo → imprimir $
+                char *c = ft_strdup("$");
+                tmp = ft_strjoin(result, c);
+                free(result);
+                free(c);
+                result = tmp;
+                i++;
+                continue;
+            }
+
+            // Extraer nombre de la variable
+            char *name = get_var_name(&str[i + 1], var_len);
+            char *val = get_env_value_list(data->env, name);
+            if (!val)
+                val = ""; // si no existe, se expande como cadena vacía
+
+            tmp = ft_strjoin(result, val);
+            free(result);
+            free(name);
+            result = tmp;
+
+            i += var_len + 1;
+            continue;
+        }
+
+        // Copiar carácter normal
+        char c[2] = { str[i], '\0' };
+        tmp = ft_strjoin(result, c);
+        free(result);
+        result = tmp;
+        i++;
+    }
+    return (result);
 }
+
 
 
 char **process_tokens(t_parse_token *tokens, t_data *data)
