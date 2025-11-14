@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maximo <maximo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: runo <runo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 18:58:11 by mwilline          #+#    #+#             */
-/*   Updated: 2025/11/04 01:58:28 by maximo           ###   ########.fr       */
+/*   Updated: 2025/11/14 11:06:12 by runo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ int builtin_exit(char **args)
     }
     exit(status);
 }
-
 
 int ft_isdigit_str(char *str)
 {
