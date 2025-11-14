@@ -6,12 +6,12 @@
 /*   By: runo <runo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 18:43:17 by mwilline          #+#    #+#             */
-/*   Updated: 2025/11/14 11:06:04 by runo             ###   ########.fr       */
+/*   Updated: 2025/11/14 14:36:26 by runo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
+//corregirr comportamiento env
 int builtin_env(t_env *env)
 {
 	while(env)

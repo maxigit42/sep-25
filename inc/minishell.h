@@ -64,8 +64,7 @@ typedef struct t_data
 	char	***cmd;
 	char	**single_cmd;
 } t_data;
-
-void	execute_cmd(t_env *env, char **cmd);
+int		execute_cmd(t_env *env, char **cmd);
 int		find_valid_path(char **paths, char **envp, char **cmd);
 char	*get_envp(char **envp);
 char	**get_cmds(t_data *data);
