@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   var_expan.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mwilline <mwilline@student.42.fr>          +#+  +:+       +#+        */
+/*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/16 21:28:44 by biniesta          #+#    #+#             */
-/*   Updated: 2025/11/17 17:50:07 by mwilline         ###   ########.fr       */
+/*   Updated: 2025/11/17 20:47:20 by biniesta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,11 @@ static int	handle_exit_status(t_data *data, char **str)
 	char	*exit_extatus;
 	char	*result;
 
+	if (g_exit_status == 130)
+	{
+		data->exit_status = 130;
+		g_exit_status = 0;
+	}
 	exit_extatus = ft_itoa(data->exit_status);
 	result = ft_strjoin(*str, exit_extatus);
 	free(exit_extatus);

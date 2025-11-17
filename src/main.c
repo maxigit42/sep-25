@@ -15,6 +15,7 @@
 
 #include "minishell.h"
 
+int g_exit_status = 0;
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -51,10 +52,9 @@ int	main(int argc, char **argv, char **envp)
 
 void	mini_init(t_data *data, t_env *envp)
 {
-	ft_take_cmd(data);
 	if (!data->token)
 		return ;
-
+	ft_take_cmd(data);
 	if (data->pipe == 0)
 		redir_cmd(data, envp);
 	else
