@@ -6,7 +6,7 @@
 /*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 13:24:12 by biniesta          #+#    #+#             */
-/*   Updated: 2025/11/17 14:45:24 by biniesta         ###   ########.fr       */
+/*   Updated: 2025/11/17 17:43:13 by biniesta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 void	free_and_exit(char *str, char **envp, int exit)
 {
-	int i;
+	int	i;
 
 	i = 0;
-	while(envp[i])
+	while (envp[i])
 	{
 		free(envp[i]);
 		i++;
@@ -28,12 +28,12 @@ void	free_and_exit(char *str, char **envp, int exit)
 
 void	free_split(char **str)
 {
-	int i;
+	int	i;
 
-	if(!str)
-		return;
+	if (!str)
+		return ;
 	i = 0;
-	while(str[i])
+	while (str[i])
 	{
 		free(str[i]);
 		i++;
@@ -45,7 +45,7 @@ void	free_list(t_token *head)
 {
 	t_token	*temp;
 
-	while(head)
+	while (head)
 	{
 		temp = head->next;
 		free(head->str);
@@ -56,10 +56,10 @@ void	free_list(t_token *head)
 
 void	ft_free(char *str, char **envp)
 {
-	int i;
+	int	i;
 
 	i = 0;
-	while(envp[i])
+	while (envp[i])
 	{
 		free(envp[i]);
 		i++;
@@ -68,95 +68,16 @@ void	ft_free(char *str, char **envp)
 	printf("%s\n", str);
 }
 
-void free_env_list(t_env *env)
+void	free_env_list(t_env *env)
 {
-    t_env *tmp;
+	t_env	*tmp;
 
-    while (env)
-    {
-        tmp = env->next;
-        free(env->key);
-        free(env->value);
-        free(env);
-        env = tmp;
-    }
-}
-
-void	free_cmd_array(char ***cmd_array)
-{
-	int	i;
-	int	j;
-		
-	if (!cmd_array || !*cmd_array)
-		return;
-		
-	i = 0;
-	while (cmd_array[i]) 
+	while (env)
 	{
-		j = 0;
-		while (cmd_array[i][j]) {
-			free(cmd_array[i][j]);  // Liberar cada string
-			j++;
-		}
-		free(cmd_array[i]);  // Liberar el subarray
-		i++;
+		tmp = env->next;
+		free(env->key);
+		free(env->value);
+		free(env);
+		env = tmp;
 	}
-	free(cmd_array);  // Liberar el array principal
-}
-
-void free_args(t_data *data)
-{
-    int i = 0;
-
-    if (data->cmd)
-    {
-        while (data->cmd[i])
-            free_split(data->cmd[i++]);
-        free(data->cmd);
-        data->cmd = NULL;
-    }
-
-    if (data->pid)
-    {
-        free(data->pid);
-        data->pid = NULL;
-    }
-}
-
-void	ft_free_list(t_token **token)
-{
-	int	i;
-
-	i = 0;
-	while (token[i])
-	{
-		free_list(token[i]);
-		i++;
-	}
-	free(token);
-}
-void	free_pipes(int **pipes, int n_pipes)
-{
-	int	i;
-
-	i = 0;
-	while (i < n_pipes)
-	{
-		free(pipes[i]);
-		i++;
-	}
-	free(pipes);
-}
-
-void	free_token(t_parse_token *token)
-{
-	int	i;
-
-	i = 0;
-	while (token[i].str)
-	{
-		free(token[i].str);
-		i++;
-	}
-	free(token);
 }
