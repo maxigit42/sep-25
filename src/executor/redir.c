@@ -12,10 +12,9 @@
 
 #include "minishell.h"
 
-
 static int	handle_infile(t_token *current)
 {
-	int fd;
+	int	fd;
 
 	fd = open(current->next->str, O_RDONLY);
 	if (fd < 0)
@@ -30,7 +29,7 @@ static int	handle_infile(t_token *current)
 
 static int	handle_outfile(t_token *current)
 {
-	int fd;
+	int	fd;
 
 	fd = open(current->next->str, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
@@ -42,7 +41,7 @@ static int	handle_outfile(t_token *current)
 
 static int	handle_append(t_token *current)
 {
-	int fd;
+	int	fd;
 
 	fd = open(current->next->str, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
@@ -54,7 +53,7 @@ static int	handle_append(t_token *current)
 
 static int	handle_heredoc(t_token *current)
 {
-	int fd;
+	int	fd;
 
 	fd = ft_here_doc(current->next->str);
 	if (fd > 0)
@@ -68,7 +67,7 @@ static int	handle_heredoc(t_token *current)
 
 void	ft_redirection(t_token *token)
 {
-	t_token *current;
+	t_token	*current;
 
 	current = token;
 	while (current)

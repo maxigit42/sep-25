@@ -6,7 +6,7 @@
 /*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 13:57:35 by biniesta          #+#    #+#             */
-/*   Updated: 2025/11/17 14:35:43 by biniesta         ###   ########.fr       */
+/*   Updated: 2025/11/17 17:16:20 by biniesta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,4 +74,28 @@ pid_t	*ft_create_pid(t_data *data)
 	if (!pids)
 		ft_error("Pid error\n", 1);
 	return (pids);
+}
+
+void	handle_no_path(char **cmd, char **envp_array)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd[0], 2);
+	ft_putstr_fd(": No such file or directory\n", 2);
+	free_split(envp_array);
+	exit(127);
+}
+
+void	handle_path_search(char **paths, char **envp_array, char **cmd)
+{
+	if (!find_valid_path(paths, envp_array, cmd))
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
+		free_split(paths);
+		free_split(envp_array);
+		exit(127);
+	}
+	free_split(paths);
+	free_split(envp_array);
 }

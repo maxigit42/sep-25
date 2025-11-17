@@ -149,5 +149,16 @@ void	take_single_cmd(t_data *data);
 void	print_cmds(t_data *data);
 
 
+//exe_utils
+int	handle_path_command(char **cmd, char **envp_array);
+void	handle_no_path(char **cmd, char **envp_array);
+void	handle_path_search(char **paths, char **envp_array, char **cmd);
+
+//exec
+int	is_path(char *cmd);
+void	execute_direct_path(char **cmd, char **envp_array);
+
+
+
 
 #endif
