@@ -6,13 +6,13 @@
 /*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 05:31:04 by biniesta          #+#    #+#             */
-/*   Updated: 2025/11/17 05:34:00 by biniesta         ###   ########.fr       */
+/*   Updated: 2025/11/17 21:45:20 by biniesta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	count_tokens(t_parse_token *tokens)
+int	countt_tokens(t_parse_token *tokens)
 {
 	int	count;
 
@@ -22,14 +22,14 @@ static int	count_tokens(t_parse_token *tokens)
 	return (count);
 }
 
-static void	free_processed(char **processed, int up_to)
+void	free_processed(char **processed, int up_to)
 {
 	while (--up_to >= 0)
 		free(processed[up_to]);
 	free(processed);
 }
 
-static char	*process_single_token(t_parse_token token, t_data *data)
+char	*process_single_token(t_parse_token token, t_data *data)
 {
 	if (token.in_single_quote == 1)
 		return (ft_strdup(token.str));
@@ -43,7 +43,7 @@ char	**process_tokens(t_parse_token *tokens, t_data *data)
 	int		count;
 	char	**processed;
 
-	count = count_tokens(tokens);
+	count = countt_tokens(tokens);
 	processed = malloc(sizeof(char *) * (count + 1));
 	if (!processed)
 		return (NULL);
@@ -60,4 +60,20 @@ char	**process_tokens(t_parse_token *tokens, t_data *data)
 	}
 	processed[i] = NULL;
 	return (processed);
+}
+
+t_parse_token	*split_with_quotes(char *str)
+{
+	t_parse_token	*tokens;
+	int				count;
+
+	if (!str)
+		return (NULL);
+	count = count_tokens(str);
+	tokens = malloc(sizeof(t_parse_token) * (count + 1));
+	if (!tokens)
+		return (NULL);
+	if (!parse_quote_tokens(str, tokens))
+		return (NULL);
+	return (tokens);
 }

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   parse_quotes.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mwilline <mwilline@student.42.fr>          +#+  +:+       +#+        */
+/*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 03:59:26 by biniesta          #+#    #+#             */
-/*   Updated: 2025/11/17 18:57:14 by mwilline         ###   ########.fr       */
+/*   Updated: 2025/11/17 21:44:47 by biniesta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	count_tokens(char *str)
+int	count_tokens(char *str)
 {
 	int		count;
 	int		in_token;
@@ -84,31 +84,7 @@ static void	fill_token(t_parse_token *tok, char *str, int len)
 	tok->str = extract_token(str, len);
 }
 
-static int	token_len(char *str)
-{
-	int		i;
-	char	quote;
-
-	i = 0;
-	quote = 0;
-	while (str[i])
-	{
-		if ((str[i] == '\'' || str[i] == '"') && !quote)
-			quote = str[i++];
-		else if (str[i] == quote)
-		{
-			quote = 0;
-			i++;
-		}
-		else if ((str[i] == ' ' || str[i] == '\t') && !quote)
-			break ;
-		else
-			i++;
-	}
-	return (i);
-}
-
-static int	parse_quote_tokens(char *str, t_parse_token *tokens)
+int	parse_quote_tokens(char *str, t_parse_token *tokens)
 {
 	int	i;
 	int	j;
@@ -128,20 +104,4 @@ static int	parse_quote_tokens(char *str, t_parse_token *tokens)
 	}
 	tokens[j].str = NULL;
 	return (1);
-}
-
-t_parse_token	*split_with_quotes(char *str)
-{
-	t_parse_token	*tokens;
-	int				count;
-
-	if (!str)
-		return (NULL);
-	count = count_tokens(str);
-	tokens = malloc(sizeof(t_parse_token) * (count + 1));
-	if (!tokens)
-		return (NULL);
-	if (!parse_quote_tokens(str, tokens))
-		return (NULL);
-	return (tokens);
 }

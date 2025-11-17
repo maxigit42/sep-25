@@ -6,7 +6,7 @@
 /*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 13:32:50 by biniesta          #+#    #+#             */
-/*   Updated: 2025/11/17 14:51:12 by biniesta         ###   ########.fr       */
+/*   Updated: 2025/11/17 21:38:48 by biniesta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,4 +101,28 @@ void	put_lstback(t_token **head, t_token *new)
 	while (temp->next)
 		temp = temp->next;
 	temp->next = new;
+}
+
+int	token_len(char *str)
+{
+	int		i;
+	char	quote;
+
+	i = 0;
+	quote = 0;
+	while (str[i])
+	{
+		if ((str[i] == '\'' || str[i] == '"') && !quote)
+			quote = str[i++];
+		else if (str[i] == quote)
+		{
+			quote = 0;
+			i++;
+		}
+		else if ((str[i] == ' ' || str[i] == '\t') && !quote)
+			break ;
+		else
+			i++;
+	}
+	return (i);
 }
