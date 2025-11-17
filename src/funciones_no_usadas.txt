@@ -69,3 +69,65 @@
 //     array[i] = NULL;
 //     return (array);
 // }
+
+
+// char	*expand_variables(char *str, t_data *data)
+// {
+// 	int		i;
+// 	char	*result;
+// 	char	*tmp;
+// 	char	c[2];
+
+// 	result = ft_strdup("");
+// 	if (!result || !str)
+// 		return (NULL);
+// 	i = 0;
+// 	while (str[i])
+// 	{
+// 		if (str[i] == '$' && str[i + 1] != '\0')
+// 		{
+// 			if (str[i + 1] == '?')
+// 				i += handle_exit_status(data, &result);
+// 			else
+// 				i += handle_var(data, &result, &str[i + 1]);
+// 			continue ;
+// 		}
+// 		c = { str[i], '\0' };
+// 		tmp = ft_strjoin(result, c);
+// 		free(result);
+// 		result = tmp;
+// 		i++;
+// 	}
+// 	return (result);
+// }
+
+// t_parse_token	*split_with_quotes(char *str)
+// {
+// 	t_parse_token	*tokens;
+// 	int				count;
+// 	int				i;
+// 	int				j;
+// 	int				len;
+
+// 	count = count_tokens(str);
+// 	tokens = malloc(sizeof(t_parse_token) * (count + 1));
+// 	if (!tokens)
+// 		return (NULL);
+// 	i = 0;
+// 	j = 0;
+// 	while (str[i])
+// 	{
+// 		while (str[i] == ' ' || str[i] == '\t')
+// 			i++;
+// 		if (!str[i])
+// 			break ;
+// 		len = token_len(&str[i]);
+// 		tokens[j].in_single_quote = (str[i] == '\'');
+// 		tokens[j].in_double_quote = (str[i] == '"');
+// 		tokens[j].str = extract_token(&str[i], len);
+// 		i += len;
+// 		j++;
+// 	}
+// 	tokens[j].str = NULL;
+// 	return (tokens);
+// }

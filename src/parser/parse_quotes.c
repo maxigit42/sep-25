@@ -3,38 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   parse_quotes.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mwilline <mwilline@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 03:59:26 by biniesta          #+#    #+#             */
-/*   Updated: 2025/11/17 05:17:18 by biniesta         ###   ########.fr       */
+/*   Updated: 2025/11/17 18:57:14 by mwilline         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-// he sustituido la funcion de check_quotes por esta
-int	quotes_closed(char *s)
-{
-	static int	q_s;
-	static int	q_d;
-
-	if (!s)
-		return (1);
-	q_s = 0;
-	q_d = 0;
-	while (*s)
-	{
-		if (*s == '\'' && !q_d)
-			q_s = !q_s;
-		if (*s == '\"' && !q_s)
-			q_d = !q_d;
-		s++;
-	}
-	if (q_s || q_d)
-		return (0);
-	else
-		return (1);
-}
 
 static int	count_tokens(char *str)
 {
@@ -63,30 +39,6 @@ static int	count_tokens(char *str)
 		i++;
 	}
 	return (count);
-}
-
-static int	token_len(char *str)
-{
-	int		i;
-	char	quote;
-
-	i = 0;
-	quote = 0;
-	while (str[i])
-	{
-		if ((str[i] == '\'' || str[i] == '"') && !quote)
-			quote = str[i++];
-		else if (str[i] == quote)
-		{
-			quote = 0;
-			i++;
-		}
-		else if ((str[i] == ' ' || str[i] == '\t') && !quote)
-			break ;
-		else
-			i++;
-	}
-	return (i);
 }
 
 static char	*extract_token(char *str, int len)
@@ -118,33 +70,78 @@ static char	*extract_token(char *str, int len)
 	return (token);
 }
 
-t_parse_token	*split_with_quotes(char *str)
+static int	skip_spaces(char *str, int i)
 {
-	t_parse_token	*tokens;
-	int				count;
-	int				i;
-	int				j;
-	int				len;
+	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
+		i++;
+	return (i);
+}
 
-	count = count_tokens(str);
-	tokens = malloc(sizeof(t_parse_token) * (count + 1));
-	if (!tokens)
-		return (NULL);
+static void	fill_token(t_parse_token *tok, char *str, int len)
+{
+	tok->in_single_quote = (str[0] == '\'');
+	tok->in_double_quote = (str[0] == '"');
+	tok->str = extract_token(str, len);
+}
+
+static int	token_len(char *str)
+{
+	int		i;
+	char	quote;
+
+	i = 0;
+	quote = 0;
+	while (str[i])
+	{
+		if ((str[i] == '\'' || str[i] == '"') && !quote)
+			quote = str[i++];
+		else if (str[i] == quote)
+		{
+			quote = 0;
+			i++;
+		}
+		else if ((str[i] == ' ' || str[i] == '\t') && !quote)
+			break ;
+		else
+			i++;
+	}
+	return (i);
+}
+
+static int	parse_quote_tokens(char *str, t_parse_token *tokens)
+{
+	int	i;
+	int	j;
+	int	len;
+
 	i = 0;
 	j = 0;
 	while (str[i])
 	{
-		while (str[i] == ' ' || str[i] == '\t')
-			i++;
+		i = skip_spaces(str, i);
 		if (!str[i])
 			break ;
 		len = token_len(&str[i]);
-		tokens[j].in_single_quote = (str[i] == '\'');
-		tokens[j].in_double_quote = (str[i] == '"');
-		tokens[j].str = extract_token(&str[i], len);
+		fill_token(&tokens[j], &str[i], len);
 		i += len;
 		j++;
 	}
 	tokens[j].str = NULL;
+	return (1);
+}
+
+t_parse_token	*split_with_quotes(char *str)
+{
+	t_parse_token	*tokens;
+	int				count;
+
+	if (!str)
+		return (NULL);
+	count = count_tokens(str);
+	tokens = malloc(sizeof(t_parse_token) * (count + 1));
+	if (!tokens)
+		return (NULL);
+	if (!parse_quote_tokens(str, tokens))
+		return (NULL);
 	return (tokens);
 }

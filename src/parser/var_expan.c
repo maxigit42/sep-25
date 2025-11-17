@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   var_expan.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mwilline <mwilline@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/16 21:28:44 by biniesta          #+#    #+#             */
-/*   Updated: 2025/11/17 05:32:02 by biniesta         ###   ########.fr       */
+/*   Updated: 2025/11/17 17:50:07 by mwilline         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,30 +53,48 @@ static int	handle_var(t_data *data, char **str, char *tmp)
 	return (var_len + 1);
 }
 
+static int	append_char(char **result, char c)
+{
+	char	temp[2];
+	char	*new;
+
+	temp[0] = c;
+	temp[1] = '\0';
+	new = ft_strjoin(*result, temp);
+	if (!new)
+		return (1);
+	free(*result);
+	*result = new;
+	return (0);
+}
+
+static int	process_variable(char *str, int i, t_data *data, char **result)
+{
+	if (str[i + 1] == '?')
+		return (handle_exit_status(data, result));
+	return (handle_var(data, result, &str[i + 1]));
+}
+
 char	*expand_variables(char *str, t_data *data)
 {
 	int		i;
 	char	*result;
-	char	*tmp;
 
+	if (!str)
+		return (NULL);
 	result = ft_strdup("");
-	if (!result || !str)
+	if (!result)
 		return (NULL);
 	i = 0;
 	while (str[i])
 	{
-		if (str[i] == '$' && str[i + 1] != '\0')
+		if (str[i] == '$' && str[i + 1])
 		{
-			if (str[i + 1] == '?')
-				i += handle_exit_status(data, &result);
-			else
-				i += handle_var(data, &result, &str[i + 1]);
+			i += process_variable(str, i, data, &result);
 			continue ;
 		}
-		char c[2] = { str[i], '\0' };
-		tmp = ft_strjoin(result, c);
-		free(result);
-		result = tmp;
+		if (append_char(&result, str[i]))
+			return (NULL);
 		i++;
 	}
 	return (result);
