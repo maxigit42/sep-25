@@ -6,7 +6,7 @@
 /*   By: mwilline <mwilline@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 18:58:11 by mwilline          #+#    #+#             */
-/*   Updated: 2025/11/17 05:24:28 by mwilline         ###   ########.fr       */
+/*   Updated: 2025/11/17 19:12:17 by mwilline         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,7 @@ int	builtin_exit(char **args)
 		status = ft_atoi(args[1]);
 		if (args[2])
 		{
-			//!!!!!!!!!!!!!!!!!!
-			fprintf(stderr, "minishell: exit: too many arguments\n");
+			ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 			return (1);
 		}
 	}
@@ -54,5 +53,3 @@ int	ft_isdigit_str(char *str)
 	}
 	return (1);
 }
-
-// no tengo permitido usar fprintf!!!!!!!!!!!!!!!!!!!
