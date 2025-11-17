@@ -131,3 +131,53 @@
 // 	tokens[j].str = NULL;
 // 	return (tokens);
 // }
+
+
+// void	ft_take_cmd(t_data *data)
+// {
+// 	t_token	*current;
+// 	int		i;
+// 	int		j;
+// 	char	**subcmd;
+// 	int		arg_count;
+
+// 	if (!data || !data->token)
+// 		return ;
+
+// 	data->cmd = malloc(sizeof(char **) * (data->pipe + 2));
+// 	if (!data->cmd)
+// 		return ;
+// 	i = 0;
+// 	current = data->token;
+
+// 	while (current)
+// 	{
+// 		j = 0;
+// 		arg_count = count_pipe_args(current);
+// 		if (arg_count <= 0)
+// 			arg_count = 1;
+// 		subcmd = malloc(sizeof(char *) * (arg_count + 1));
+// 		if (!subcmd)
+// 			return (free_cmd_array(data->cmd), (void)(data->cmd = NULL));
+
+// 		while (current && current->type != PIPE)
+// 		{
+// 			if (current->type == OUTFILE || current->type == INFILE
+// 				|| current->type == APPEND || current->type == HEREDOC)
+// 			{
+// 				current = current->next;
+// 				if (current)
+// 					current = current->next;
+// 				continue ;
+// 			}
+// 			subcmd[j++] = ft_strdup(current->str);
+// 			current = current->next;
+// 		}
+// 		subcmd[j] = NULL;
+// 		data->cmd[i++] = subcmd;
+
+// 		if (current && current->type == PIPE)
+// 			current = current->next;
+// 	}
+// 	data->cmd[i] = NULL;
+// }
