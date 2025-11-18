@@ -121,6 +121,7 @@ int				get_var_name_len(char *str);
 char			*get_var_name(char *str, int len);
 int				builtin_modifies_state(char *cmd);
 int				has_redirection(t_token *token);
+int				check_pipes(char *args);
 
 /* signals */
 void			set_signal(void);

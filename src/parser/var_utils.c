@@ -6,7 +6,7 @@
 /*   By: biniesta <biniesta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 13:37:47 by biniesta          #+#    #+#             */
-/*   Updated: 2025/11/18 18:55:35 by biniesta         ###   ########.fr       */
+/*   Updated: 2025/11/18 22:04:21 by biniesta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,4 +63,32 @@ int	check_quotes(char *str, t_data *data)
 		return (0);
 	}
 	return (1);
+}
+
+int	check_pipes(char *args)
+{
+	int	i;
+	int	cmd;
+
+	i = 0;
+	cmd = 0;
+	while (args[i])
+	{
+		if (args[i] == '|' && !cmd)
+			return (printf("syntax error near unexpected token `|'\n"));
+		cmd = 0;
+		while (args[i] && args[i] != ' ')
+		{
+			if (args[i] == '|' && args[i + 1] == '|')
+				return (printf("syntax error near unexpected token `|'\n"));
+			if (args[i] != '|')
+				cmd = 1;
+			i++;
+		}
+		if (args[i])
+			i++;
+	}
+	if (!cmd)
+		return (printf("syntax error near unexpected token `|'\n"));
+	return (0);
 }
