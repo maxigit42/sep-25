@@ -172,6 +172,7 @@ int				countt_tokens(t_parse_token *tokens);
 void			free_processed(char **processed, int up_to);
 char			*process_single_token(t_parse_token token, t_data *data);
 
-int is_valid_key(const char *s);
+int				is_valid_key(const char *s);
+int				check_and_set(char *arg, t_env **env);
 
 #endif

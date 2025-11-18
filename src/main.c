@@ -79,7 +79,7 @@ void	mini_init(t_data *data, t_env *envp)
 void	ft_take_cmd(t_data *data)
 {
 	t_token	*current;
-	int	i;
+	int		i;
 	char	**subcmd;
 
 	if (!alloc_cmd_array(data))
